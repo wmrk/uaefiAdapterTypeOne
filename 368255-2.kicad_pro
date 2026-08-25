@@ -39,9 +39,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 3.2,
-          "height": 5.5,
-          "width": 5.5
+          "drill": 2.2,
+          "height": 2.6,
+          "width": 2.6
         },
         "silk_line_width": 0.381,
         "silk_text_italic": false,
@@ -625,7 +625,103 @@
       },
       {
         "netclass": "3.75A",
-        "pattern": "OUT_IGN1"
+        "pattern": "/OUT_IGN1"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_IGN2"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_IGN3"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_IGN4"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_IGN5"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_IGN6"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ1"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ2"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ3"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ4"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ5"
+      },
+      {
+        "netclass": "3.75A",
+        "pattern": "/OUT_INJ6"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS1"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS2"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS3"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS4"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS_HOT1"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_LS_HOT2"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_DC1+"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_DC1-"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_DC2+"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/OUT_DC2-"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "+12V"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "+5VUSB"
+      },
+      {
+        "netclass": "1.5A",
+        "pattern": "/12V_KEY_VIGN"
       }
     ]
   },
