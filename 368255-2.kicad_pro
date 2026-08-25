@@ -625,51 +625,11 @@
       },
       {
         "netclass": "3.75A",
-        "pattern": "/OUT_IGN1"
+        "pattern": "/OUT_IGN*"
       },
       {
         "netclass": "3.75A",
-        "pattern": "/OUT_IGN2"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_IGN3"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_IGN4"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_IGN5"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_IGN6"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ1"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ2"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ3"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ4"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ5"
-      },
-      {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ6"
+        "pattern": "/OUT_INJ*"
       },
       {
         "netclass": "1.5A",
@@ -697,19 +657,7 @@
       },
       {
         "netclass": "1.5A",
-        "pattern": "/OUT_DC1+"
-      },
-      {
-        "netclass": "1.5A",
-        "pattern": "/OUT_DC1-"
-      },
-      {
-        "netclass": "1.5A",
-        "pattern": "/OUT_DC2+"
-      },
-      {
-        "netclass": "1.5A",
-        "pattern": "/OUT_DC2-"
+        "pattern": "/OUT_DC*"
       },
       {
         "netclass": "1.5A",
