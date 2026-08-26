@@ -8010,7 +8010,7 @@
 			(justify left bottom)
 		)
 	)
-	(gr_text "RusEFI to OEM 121-pin adapter by wmrk\nThis project is {dblquote}Open source{dblquote} and provided {dblquote}AS IS{dblquote}\nFor pinout and more info refer to:\nhttps://github.com/wmrk/uaefiAdapterTypeOne"
+	(gr_text "RusEFI to OEM 121-pin adapter by wmrk.\nThis project is Open Source and provided {dblquote}AS IS{dblquote}.\nFor pinout and more info, refer to:\nhttps://github.com/wmrk/uaefiAdapterTypeOne"
 		(at 44 104.5 270)
 		(layer "F.SilkS")
 		(uuid "3b832c13-d867-4995-8055-5fe3cade1588")
