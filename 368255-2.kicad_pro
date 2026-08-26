@@ -39,9 +39,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 2.2,
-          "height": 2.6,
-          "width": 2.6
+          "drill": 1.5,
+          "height": 2.4,
+          "width": 2.4
         },
         "silk_line_width": 0.381,
         "silk_text_italic": false,
@@ -594,11 +594,65 @@
         "line_style": 0,
         "microvia_diameter": 0.508,
         "microvia_drill": 0.127,
+        "name": "2.5A",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 5,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 1.0,
+        "tuning_profile": "",
+        "via_diameter": 0.889,
+        "via_drill": 0.635,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.254,
+        "diff_pair_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.508,
+        "microvia_drill": 0.127,
+        "name": "2A",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 4,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 0.7,
+        "tuning_profile": "",
+        "via_diameter": 0.889,
+        "via_drill": 0.635,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.254,
+        "diff_pair_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.508,
+        "microvia_drill": 0.127,
         "name": "3.75A",
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "priority": 3,
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.778,
+        "tuning_profile": "",
+        "via_diameter": 0.889,
+        "via_drill": 0.635,
+        "wire_width": 6
+      },
+      {
+        "bus_width": 12,
+        "clearance": 0.254,
+        "diff_pair_gap": 0.25,
+        "diff_pair_width": 0.2,
+        "line_style": 0,
+        "microvia_diameter": 0.508,
+        "microvia_drill": 0.127,
+        "name": "6A",
+        "pcb_color": "rgba(0, 0, 0, 0.000)",
+        "priority": 6,
+        "schematic_color": "rgba(0, 0, 0, 0.000)",
+        "track_width": 2.5,
         "tuning_profile": "",
         "via_diameter": 0.889,
         "via_drill": 0.635,
@@ -624,12 +678,52 @@
         "pattern": "GNDA"
       },
       {
-        "netclass": "3.75A",
-        "pattern": "/OUT_IGN*"
+        "netclass": "2A",
+        "pattern": "/OUT_IGN1"
       },
       {
-        "netclass": "3.75A",
-        "pattern": "/OUT_INJ*"
+        "netclass": "2A",
+        "pattern": "/OUT_IGN2"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_IGN3"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_IGN4"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_IGN5"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_IGN6"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ1"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ2"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ3"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ4"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ5"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/OUT_INJ6"
       },
       {
         "netclass": "1.5A",
@@ -656,19 +750,31 @@
         "pattern": "/OUT_LS_HOT2"
       },
       {
-        "netclass": "1.5A",
-        "pattern": "/OUT_DC*"
+        "netclass": "6A",
+        "pattern": "/OUT_DC1+"
       },
       {
-        "netclass": "1.5A",
+        "netclass": "6A",
+        "pattern": "/OUT_DC1-"
+      },
+      {
+        "netclass": "6A",
+        "pattern": "/OUT_DC2+"
+      },
+      {
+        "netclass": "6A",
+        "pattern": "/OUT_DC2-"
+      },
+      {
+        "netclass": "2.5A",
         "pattern": "+12V"
       },
       {
-        "netclass": "1.5A",
+        "netclass": "2.5A",
         "pattern": "+5VUSB"
       },
       {
-        "netclass": "1.5A",
+        "netclass": "2.5A",
         "pattern": "/12V_KEY_VIGN"
       }
     ]

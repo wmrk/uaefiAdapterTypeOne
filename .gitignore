@@ -2,3 +2,9 @@
 /rescue-backup
 *.lck
 *-gerber/
+*.kicad_prl
+368255-2.ses
+368255-2.dsn
+*.dsn
+*.dsn
+*.ses
