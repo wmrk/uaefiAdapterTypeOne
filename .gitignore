@@ -1,8 +1,8 @@
-.history/
-/rescue-backup
-*.lck
-*-gerber/
-*.kicad_prl
-*.dsn
-*.ses
-*-gerber.zip
+/kicad-src/.history/
+/kicad-src/rescue-backup
+/kicad-src/*.lck
+/kicad-src/*-gerber/
+/kicad-src/*.kicad_prl
+/kicad-src/*.dsn
+/kicad-src/*.ses
+/kicad-src/*-gerber.zip
