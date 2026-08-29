@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Интерактивная распиновка ЭБУ (121 Pin) - uaEFI</title>
+    <title data-i18n="doc_title">{doc_title}</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -33,6 +33,21 @@
             color: #6c757d;
             margin-bottom: 25px;
             font-size: 14px;
+        }
+        .page-footer {
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+        .page-footer strong { color: #495057; }
+        .page-footer a { color: #d32f2f; text-decoration: none; }
+        .page-footer a:hover { text-decoration: underline; }
+        .page-footer ul {
+            margin: 6px 0 0;
+            padding-left: 18px;
         }
         .page-head {
             display: flex;
@@ -206,13 +221,13 @@
 
 <div class="container">
     <div class="page-head">
-        <div class="lang-switch" role="group" aria-label="Language / Язык">
+        <div class="lang-switch" role="group" data-i18n-aria-label="lang_switch_label" aria-label="{lang_switch_label}">
             <button type="button" id="langBtn-en" class="lang-btn" aria-pressed="false" onclick="setLang('en')">EN</button>
             <button type="button" id="langBtn-ru" class="lang-btn" aria-pressed="false" onclick="setLang('ru')">RU</button>
         </div>
         <div class="page-head-text">
-            <h1 id="pageTitle">Интерактивная схема разъема ЭБУ (121 Pin)</h1>
-            <p class="subtitle" id="pageSubtitle">Карта соединений с платой uaEFI.</p>
+            <h1 data-i18n="page_title">{page_title}</h1>
+            <p class="subtitle" data-i18n="page_subtitle">{page_subtitle}</p>
         </div>
     </div>
     
@@ -227,26 +242,27 @@
 
     <div id="tooltip" class="custom-tooltip"></div>
 
-    <input type="text" id="searchInput" class="search-box" placeholder="Поиск по пину, метке..." onkeyup="filterTable()">
+    <input type="text" id="searchInput" class="search-box" data-i18n-placeholder="search_placeholder" placeholder="{search_placeholder}" onkeyup="filterTable()">
 
     <div class="table-wrapper">
         <table id="pinoutTable">
             <thead>
                 <tr>
-                    <th style="width: 10%;" id="thBosch">Пин 121 (Bosch)</th>
-                    <th style="width: 15%;" id="thUaefi">Пин uaEFI</th>
-                    <th style="width: 30%;" id="thLabel">Метка со схемы</th>
-                    <th style="width: 45%;" id="thName">Назначение (Имя)</th>
+                    <th style="width: 10%;" data-i18n="th_bosch_pin">{th_bosch_pin}</th>
+                    <th style="width: 15%;" data-i18n="th_uaefi_pin">{th_uaefi_pin}</th>
+                    <th style="width: 30%;" data-i18n="th_schematic_label">{th_schematic_label}</th>
+                    <th style="width: 45%;" data-i18n="th_function">{th_function}</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
             </tbody>
         </table>
     </div>
+
+    <footer class="page-footer" data-i18n-html="footer_license">{footer_license}</footer>
 </div>
 
 <script>
-    // --- ДАННЫЕ ИЗ JSON ---
     const pinData = {
   "pin_mapping": [
     { "bosch_pin": 1, "uaefi_pin": "B14", "uaefi_pin_en": "B14", "label": "OUT_IGN2", "name": "Выход зажигания, катушка 2 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 2 (IGBT ISL9V3040D3ST)" },
@@ -318,39 +334,56 @@
   ]
 };
 
-    // --- 0. ЛОКАЛИЗАЦИЯ ---
     const I18N = {
         ru: {
-            docTitle: "Интерактивная распиновка ЭБУ (121 Pin) - uaEFI",
-            title: "Интерактивная схема разъема ЭБУ (121 Pin)",
-            subtitle: "Карта соединений с платой uaEFI.",
-            search: "Поиск по пину, метке...",
-            thBosch: "Пин 121 (Bosch)",
-            thUaefi: "Пин uaEFI",
-            thLabel: "Метка со схемы",
-            thName: "Назначение (Имя)",
-            notConnected: "Не подключен",
-            dash: "—",
-            tipTitle: p => `Пин №${p} (Bosch 121)`,
-            tipUaefi: "uaEFI",
-            tipLabel: "Метка",
-            tipName: "Назначение"
+            doc_title: "Интерактивная распиновка ЭБУ (121 Pin) - uaEFI",
+            page_title: "Интерактивная схема разъема ЭБУ (121 Pin)",
+            page_subtitle: "Карта соединений с платой uaEFI",
+            lang_switch_label: "Язык",
+            search_placeholder: "Поиск по пину, метке...",
+            th_bosch_pin: "Пин 121 (Bosch)",
+            th_uaefi_pin: "Пин uaEFI",
+            th_schematic_label: "Метка со схемы",
+            th_function: "Назначение (Имя)",
+            pin_not_connected: "Не подключен",
+            pin_dash: "—",
+            tooltip_title: p => `Пин №${p} (Bosch 121)`,
+            tooltip_uaefi: "uaEFI",
+            tooltip_label: "Метка",
+            tooltip_function: "Назначение",
+            footer_license: `<strong>Лицензия:</strong> <a href="LICENSE">CERN-OHL-S-2.0</a> —
+                CERN Open Hardware Licence v2, Strongly Reciprocal.
+                <strong>Дополнительные условия</strong> (не входят в текст лицензии):
+                <ul>
+                    <li>#1: адаптер предназначен для внедорожной наземной и водной техники;</li>
+                    <li>#2: адаптер не соответствует экологическим нормам для автотранспорта;</li>
+                    <li>#3: адаптер не сертифицирован для пилотируемой авиации.</li>
+                </ul>`
         },
         en: {
-            docTitle: "Interactive ECU Pinout (121 Pin) - uaEFI",
-            title: "Interactive ECU Connector Pinout (121 Pin)",
-            subtitle: "Connection map to the uaEFI board.",
-            search: "Search by pin or label...",
-            thBosch: "Pin 121 (Bosch)",
-            thUaefi: "uaEFI pin",
-            thLabel: "Schematic label",
-            thName: "Function",
-            notConnected: "Not connected",
-            dash: "—",
-            tipTitle: p => `Pin #${p} (Bosch 121)`,
-            tipUaefi: "uaEFI",
-            tipLabel: "Label",
-            tipName: "Function"
+            doc_title: "Interactive ECU Pinout (121 Pin) - uaEFI",
+            page_title: "Interactive ECU Connector Pinout (121 Pin)",
+            page_subtitle: "Connection map to the uaEFI board",
+            lang_switch_label: "Language",
+            search_placeholder: "Search by pin or label...",
+            th_bosch_pin: "Pin 121 (Bosch)",
+            th_uaefi_pin: "uaEFI pin",
+            th_schematic_label: "Schematic label",
+            th_function: "Function",
+            pin_not_connected: "Not connected",
+            pin_dash: "—",
+            tooltip_title: p => `Pin #${p} (Bosch 121)`,
+            tooltip_uaefi: "uaEFI",
+            tooltip_label: "Label",
+            tooltip_function: "Function",
+            footer_license: `<strong>License:</strong> <a href="LICENSE">CERN-OHL-S-2.0</a> —
+                CERN Open Hardware Licence v2, Strongly Reciprocal.
+                <strong>Additional terms</strong> (not part of the licence text):
+                <ul>
+                    <li>#1: this adapter is intended for off-road land and water vehicles;</li>
+                    <li>#2: this adapter is not compliant with automotive environmental regulations;</li>
+                    <li>#3: this adapter is not approved for manned aircraft applications.</li>
+                </ul>`
         }
     };
 
@@ -360,7 +393,7 @@
         try {
             const saved = localStorage.getItem(LANG_KEY);
             if (saved === "ru" || saved === "en") return saved;
-        } catch (e) { /* приватный режим / доступ к хранилищу закрыт */ }
+        } catch (e) {}
         const nav = (navigator.languages && navigator.languages[0]) || navigator.language || "en";
         return String(nav).toLowerCase().startsWith("ru") ? "ru" : "en";
     }
@@ -368,16 +401,13 @@
     let lang = detectLang();
     const t = () => I18N[lang];
 
-    // --- 1. ПОДГОТОВКА ДАННЫХ ---
     const pinDatabase = {};
     const pinToGroup = {};
 
-    // Инициализация: пин не подключён
     for (let i = 1; i <= 121; i++) {
         pinDatabase[i] = { uaefi: null, label: "-", name: null, connected: false };
     }
 
-    // Заполнение маппинга
     pinData.pin_mapping.forEach(item => {
         if(item.bosch_pin >= 1 && item.bosch_pin <= 121) {
             pinDatabase[item.bosch_pin] = {
@@ -389,7 +419,6 @@
         }
     });
 
-    // Заполнение групп
     pinData.shared_pins.forEach(group => {
         group.pins.forEach(p => {
             if(p >= 1 && p <= 121) {
@@ -406,16 +435,13 @@
         });
     });
 
-    // Значения пина в текущем языке
     function pinView(p) {
         const d = pinDatabase[p];
-        if (!d.connected) return { uaefi: t().dash, label: "-", name: t().notConnected };
+        if (!d.connected) return { uaefi: t().pin_dash, label: "-", name: t().pin_not_connected };
         return { uaefi: d.uaefi[lang], label: d.label, name: d.name[lang] };
     }
 
-    // --- 2. РЕНДЕРИНГ (ГЕОМЕТРИЯ КАК В ОРИГИНАЛЕ) ---
     const pinsGeometry = {};
-    // (Генерация геометрии оставлена без изменений)
     const initGeom = () => {
         pinsGeometry[4] = { cx: 50, cy: 60, type: "large", label: "top" };
         pinsGeometry[5] = { cx: 110, cy: 60, type: "large", label: "top" };
@@ -445,7 +471,6 @@
     const tableBody = document.getElementById('tableBody');
     const tooltip = document.getElementById('tooltip');
     
-    // Рендер SVG
     Object.keys(pinsGeometry).sort((a,b) => a-b).forEach(p => {
         const geom = pinsGeometry[p];
         const cls = `pin pin-${p}`;
@@ -459,7 +484,6 @@
         pinsContainer.innerHTML += svg + lbl;
     });
 
-    // Рендер таблицы
     function renderTable() {
         let rows = "";
         for (let p = 1; p <= 121; p++) {
@@ -469,13 +493,9 @@
         tableBody.innerHTML = rows;
     }
 
-    // --- 3. ИНТЕРАКТИВ ---
     const TIP_GAP = 15;     // отступ от курсора
     const TIP_EDGE = 8;     // минимальный зазор до края окна
 
-    // Подсказка идёт справа от курсора, а если не помещается — слева от него.
-    // Ширину меряем у левого края: иначе остаток места до правого края окна
-    // сам ужимает блок переносами и ширина получается заниженной.
     function placeTooltip(e) {
         tooltip.style.left = '0px';
         const w = tooltip.offsetWidth;
@@ -491,11 +511,10 @@
         const p = parseInt(el.getAttribute('data-pin'));
         el.addEventListener('mouseenter', (e) => {
             const data = pinView(p);
-            tooltip.innerHTML = `<div class="tooltip-title">${t().tipTitle(p)}</div>${t().tipUaefi}: ${data.uaefi}<br/>${t().tipLabel}: ${data.label}<br/>${t().tipName}: ${data.name}`;
+            tooltip.innerHTML = `<div class="tooltip-title">${t().tooltip_title(p)}</div>${t().tooltip_uaefi}: ${data.uaefi}<br/>${t().tooltip_label}: ${data.label}<br/>${t().tooltip_function}: ${data.name}`;
             tooltip.style.display = 'block';
             placeTooltip(e);
 
-            // Логика групповой подсветки
             const groupName = pinToGroup[p];
             if (groupName) {
                 const group = pinData.shared_pins.find(g => g.type === groupName);
@@ -530,18 +549,13 @@
         document.querySelectorAll('#tableBody tr').forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none");
     }
 
-    // --- 4. ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ---
     function applyLang() {
         const s = t();
         document.documentElement.lang = lang;
-        document.title = s.docTitle;
-        document.getElementById('pageTitle').textContent = s.title;
-        document.getElementById('pageSubtitle').textContent = s.subtitle;
-        document.getElementById('searchInput').placeholder = s.search;
-        document.getElementById('thBosch').textContent = s.thBosch;
-        document.getElementById('thUaefi').textContent = s.thUaefi;
-        document.getElementById('thLabel').textContent = s.thLabel;
-        document.getElementById('thName').textContent = s.thName;
+        document.querySelectorAll('[data-i18n]').forEach(el => el.textContent = s[el.dataset.i18n]);
+        document.querySelectorAll('[data-i18n-html]').forEach(el => el.innerHTML = s[el.dataset.i18nHtml]);
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = s[el.dataset.i18nPlaceholder]);
+        document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label', s[el.dataset.i18nAriaLabel]));
         document.getElementById('langBtn-ru').setAttribute('aria-pressed', String(lang === 'ru'));
         document.getElementById('langBtn-en').setAttribute('aria-pressed', String(lang === 'en'));
         renderTable();
@@ -551,7 +565,7 @@
     function setLang(next) {
         if (next !== 'ru' && next !== 'en') return;
         lang = next;
-        try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* хранилище недоступно */ }
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
         applyLang();
     }
 
