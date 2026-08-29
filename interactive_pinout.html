@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивная распиновка ЭБУ (121 Pin) - uaEFI</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 5px;
+            border-left: 5px solid #d32f2f;
+            padding-left: 12px;
+        }
+        p.subtitle {
+            color: #6c757d;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        .page-head {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .page-head-text { flex: 1; min-width: 0; }
+        .lang-switch {
+            display: inline-flex;
+            flex: none;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #ffffff;
+            margin-top: 2px;
+        }
+        .lang-btn {
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1;
+            padding: 7px 11px;
+            border: 0;
+            background: transparent;
+            color: #6c757d;
+            cursor: pointer;
+            transition: background-color .15s ease, color .15s ease;
+        }
+        .lang-btn + .lang-btn { border-left: 1px solid #ced4da; }
+        .lang-btn:hover { background: #f1f3f5; color: #2c3e50; }
+        .lang-btn[aria-pressed="true"] {
+            background: #d32f2f;
+            color: #ffffff;
+        }
+        .lang-btn:focus-visible { outline: 2px solid #2c3e50; outline-offset: -2px; }
+        .connector-wrapper {
+            overflow-x: auto;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        svg {
+            user-select: none;
+        }
+        .pin {
+            fill: #ffffff;
+            stroke: #333333;
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .pin:hover {
+            fill: #ffeb3b !important;
+            stroke: #000000;
+            stroke-width: 2.5;
+        }
+        .pin.connected-highlight {
+            fill: #a8e6cf !important;
+            stroke: #11999e;
+            stroke-width: 2.2;
+        }
+        .pin.active {
+            fill: #ff5722 !important;
+            stroke: #d32f2f;
+            stroke-width: 3;
+            filter: drop-shadow(0px 0px 4px rgba(255,87,34,0.6));
+        }
+        .pin-label {
+            font-size: 11px;
+            font-weight: bold;
+            fill: #ffffff;
+            text-anchor: middle;
+            font-family: monospace;
+            pointer-events: none;
+        }
+        .custom-tooltip {
+            position: fixed;
+            background: rgba(33, 37, 41, 0.95);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            display: none;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 320px;
+            border: 1px solid #495057;
+            line-height: 1.5;
+        }
+        .custom-tooltip .tooltip-title {
+            font-weight: bold;
+            color: #ffeb3b;
+            margin-bottom: 5px;
+            font-size: 14px;
+            border-bottom: 1px solid #495057;
+            padding-bottom: 4px;
+        }
+        .search-box {
+            margin-bottom: 20px;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        .search-box:focus {
+            outline: none;
+            border-color: #d32f2f;
+        }
+        .table-wrapper {
+            max-height: 600px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-weight: 600;
+        }
+        tr {
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        tr.selected-row {
+            background-color: #fffae6 !important;
+            border-left: 4px solid #ff9800;
+        }
+        tr.connected-row {
+            background-color: #e8f8f5 !important;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        .empty-text {
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="page-head">
+        <div class="lang-switch" role="group" aria-label="Language / Язык">
+            <button type="button" id="langBtn-en" class="lang-btn" aria-pressed="false" onclick="setLang('en')">EN</button>
+            <button type="button" id="langBtn-ru" class="lang-btn" aria-pressed="false" onclick="setLang('ru')">RU</button>
+        </div>
+        <div class="page-head-text">
+            <h1 id="pageTitle">Интерактивная схема разъема ЭБУ (121 Pin)</h1>
+            <p class="subtitle" id="pageSubtitle">Карта соединений с платой uaEFI.</p>
+        </div>
+    </div>
+    
+    <div class="connector-wrapper">
+        <svg id="ecuSvg" width="910" height="270" viewBox="0 0 910 270">
+            <rect x="5" y="5" width="900" height="260" rx="12" fill="#bc2626" stroke="#801414" stroke-width="4" />
+            <rect x="18" y="18" width="545" height="234" rx="8" fill="#5a5a5a" stroke="#333" stroke-width="2" />
+            <rect x="575" y="18" width="317" height="234" rx="8" fill="#5a5a5a" stroke="#333" stroke-width="2" />
+            <g id="pinsContainer"></g>
+        </svg>
+    </div>
+
+    <div id="tooltip" class="custom-tooltip"></div>
+
+    <input type="text" id="searchInput" class="search-box" placeholder="Поиск по пину, метке..." onkeyup="filterTable()">
+
+    <div class="table-wrapper">
+        <table id="pinoutTable">
+            <thead>
+                <tr>
+                    <th style="width: 10%;" id="thBosch">Пин 121 (Bosch)</th>
+                    <th style="width: 15%;" id="thUaefi">Пин uaEFI</th>
+                    <th style="width: 30%;" id="thLabel">Метка со схемы</th>
+                    <th style="width: 45%;" id="thName">Назначение (Имя)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // --- ДАННЫЕ ИЗ JSON ---
+    const pinData = {
+  "pin_mapping": [
+    { "bosch_pin": 1, "uaefi_pin": "B14", "uaefi_pin_en": "B14", "label": "OUT_IGN2", "name": "Выход зажигания, катушка 2 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 2 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 2, "uaefi_pin": "B12", "uaefi_pin_en": "B12", "label": "OUT_IGN3", "name": "Выход зажигания, катушка 3 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 3 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 4, "uaefi_pin": "B11", "uaefi_pin_en": "B11", "label": "OUT_IGN4", "name": "Выход зажигания, катушка 4 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 4 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 5, "uaefi_pin": "B15", "uaefi_pin_en": "B15", "label": "OUT_IGN1", "name": "Выход зажигания, катушка 1 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 1 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 6, "uaefi_pin": "B5", "uaefi_pin_en": "B5", "label": "OUT_INJ2", "name": "Выход форсунки 2 (VNLD5160)", "name_en": "Injector 2 (VNLD5160)" },
+    { "bosch_pin": 7, "uaefi_pin": "B4", "uaefi_pin_en": "B4", "label": "OUT_INJ3", "name": "Выход форсунки 3 (VNLD5160)", "name_en": "Injector 3 (VNLD5160)" },
+    { "bosch_pin": 13, "uaefi_pin": "A7", "uaefi_pin_en": "A7", "label": "12V_KEY_VIGN", "name": "Напряжение с замка зажигания, аналоговый вход", "name_en": "Ignition Switch / Battery Voltage Analog Input" },
+    { "bosch_pin": 14, "uaefi_pin": "B9", "uaefi_pin_en": "B9", "label": "OUT_LS_HOT1", "name": "Низкоуровневый выход реле 1, всегда под питанием", "name_en": "Low-Side relay output 1, always hot / relay capable" },
+    { "bosch_pin": 15, "uaefi_pin": "C18", "uaefi_pin_en": "C18", "label": "VR_DISCRETE+", "name": "Дискретный вход VR +, для венцов с малым числом зубьев", "name_en": "VR_DISCRETE positive input best for low count wheel" },
+    { "bosch_pin": 16, "uaefi_pin": "D6", "uaefi_pin_en": "D6", "label": "IN_PPS1", "name": "Датчик положения педали 1 (PPS1)", "name_en": "Universal analog input. Suggested PPS input 1" },
+    { "bosch_pin": 19, "uaefi_pin": "D14", "uaefi_pin_en": "D14", "label": "IN_KNOCK_RAW", "name": "Датчик детонации, сырой сигнал", "name_en": "Knock sensor raw input" },
+    { "bosch_pin": 21, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "BRAKE_PEDAL_SENSOR", "name": "Датчик педали тормоза, клемма J22, с uaEFI не соединён", "name_en": "Brake pedal switch, terminal J22, not wired to uaEFI" },
+    { "bosch_pin": 27, "uaefi_pin": "B6", "uaefi_pin_en": "B6", "label": "OUT_INJ1", "name": "Выход форсунки 1 (VNLD5160)", "name_en": "Injector 1 (VNLD5160)" },
+    { "bosch_pin": 34, "uaefi_pin": "C19", "uaefi_pin_en": "C19", "label": "VR_DISCRETE-", "name": "Дискретный вход VR −, для венцов с малым числом зубьев", "name_en": "VR_DISCRETE negative input best for low count wheel" },
+    { "bosch_pin": 37, "uaefi_pin": "D9", "uaefi_pin_en": "D9", "label": "IN_MAP", "name": "Датчик абсолютного давления (MAP)", "name_en": "Universal analog input. Suggested MAP signal" },
+    { "bosch_pin": 38, "uaefi_pin": "C14", "uaefi_pin_en": "C14", "label": "IN_TPS2", "name": "Датчик положения дросселя 2 (TPS2)", "name_en": "Universal analog input. Suggested TPS 2 sensor input" },
+    { "bosch_pin": 39, "uaefi_pin": "D16", "uaefi_pin_en": "D16", "label": "IN_CLT", "name": "Датчик температуры ОЖ (CLT)", "name_en": "ECT CLT Coolant Sensor Input" },
+    { "bosch_pin": 40, "uaefi_pin": "C4", "uaefi_pin_en": "C4", "label": "IN_PPS2", "name": "Датчик положения педали 2 (PPS2)", "name_en": "Universal analog input. Suggested PPS input 2" },
+    { "bosch_pin": 42, "uaefi_pin": "D15", "uaefi_pin_en": "D15", "label": "IN_IAT", "name": "Датчик температуры воздуха (IAT)", "name_en": "IAT Sensor Input" },
+    { "bosch_pin": 46, "uaefi_pin": "B7", "uaefi_pin_en": "B7", "label": "OUT_LS1", "name": "Низкоуровневый выход 1 (VNLD5160)", "name_en": "Low-Side 1 output (VNLD5160)" },
+    { "bosch_pin": 47, "uaefi_pin": "B3", "uaefi_pin_en": "B3", "label": "OUT_INJ4", "name": "Выход форсунки 4 (VNLD5160)", "name_en": "Injector 4 (VNLD5160)" },
+    { "bosch_pin": 50, "uaefi_pin": "B8", "uaefi_pin_en": "B8", "label": "OUT_LS_HOT2", "name": "Низкоуровневый выход реле 2, всегда под питанием", "name_en": "Low-Side relay output 2, always hot / relay capable" },
+    { "bosch_pin": 54, "uaefi_pin": "D13", "uaefi_pin_en": "D13", "label": "IN_TPS1", "name": "Датчик положения дросселя 1 (TPS1)", "name_en": "Universal analog input. Suggested TPS 1 sensor input" },
+    { "bosch_pin": 57, "uaefi_pin": "C9 (через U1)", "uaefi_pin_en": "C9 (via U1)", "label": "BUTTON3", "name": "Кнопка 3 (через ULN2003 → IN_BUTTON3)", "name_en": "Button 3 (via ULN2003 to IN_BUTTON3)" },
+    { "bosch_pin": 58, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "BRAKE_PEDAL_SENSOR_2", "name": "Датчик педали тормоза 2, клемма J23, с uaEFI не соединён", "name_en": "Brake pedal switch 2, terminal J23, not wired to uaEFI" },
+    { "bosch_pin": 59, "uaefi_pin": "C5", "uaefi_pin_en": "C5", "label": "IN_HALL1_SPEED_SENSOR", "name": "Датчик Холла 1: скорость (VSS)", "name_en": "VSS / HALL1 Sensor" },
+    { "bosch_pin": 60, "uaefi_pin": "D2 (через U1)", "uaefi_pin_en": "D2 (via U1)", "label": "BUTTON1", "name": "Кнопка 1 (через ULN2003 → IN_BUTTON1)", "name_en": "Button 1 (via ULN2003 to IN_BUTTON1)" },
+    { "bosch_pin": 62, "uaefi_pin": "D7", "uaefi_pin_en": "D7", "label": "CAN+", "name": "Шина CAN, линия High", "name_en": "CAN bus High" },
+    { "bosch_pin": 68, "uaefi_pin": "B2", "uaefi_pin_en": "B2", "label": "OUT_INJ5", "name": "Выход форсунки 5 (VNLD5160)", "name_en": "Injector 5 (VNLD5160)" },
+    { "bosch_pin": 69, "uaefi_pin": "B1", "uaefi_pin_en": "B1", "label": "OUT_INJ6", "name": "Выход форсунки 6 (VNLD5160)", "name_en": "Injector 6 (VNLD5160)" },
+    { "bosch_pin": 70, "uaefi_pin": "B16", "uaefi_pin_en": "B16", "label": "OUT_LS4", "name": "Низкоуровневый выход 4 (VNLD5160)", "name_en": "Low-Side 4 output (VNLD5160)" },
+    { "bosch_pin": 74, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "CLUTCH_SENSOR", "name": "Датчик сцепления, клемма J21, с uaEFI не соединён", "name_en": "Clutch switch, terminal J21, not wired to uaEFI" },
+    { "bosch_pin": 75, "uaefi_pin": "D10 (через U1)", "uaefi_pin_en": "D10 (via U1)", "label": "CONTITIONER_ON", "name": "Запрос включения кондиционера (через ULN2003 → IN_BUTTON2)", "name_en": "A/C request (via ULN2003 to IN_BUTTON2)" },
+    { "bosch_pin": 79, "uaefi_pin": "C6", "uaefi_pin_en": "C6", "label": "IN_HALL2", "name": "Датчик Холла 2: распредвал, впуск", "name_en": "CAM Sensor Intake" },
+    { "bosch_pin": 81, "uaefi_pin": "D8", "uaefi_pin_en": "D8", "label": "CAN-", "name": "Шина CAN, линия Low", "name_en": "CAN bus Low" },
+    { "bosch_pin": 92, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "+5VUSB", "name": "Питание +5 В от USB, клемма J24", "name_en": "+5v USB supply, terminal J24" },
+    { "bosch_pin": 98, "uaefi_pin": "B17", "uaefi_pin_en": "B17", "label": "OUT_LS3", "name": "Низкоуровневый выход 3 (VNLD5160)", "name_en": "Low-Side 3 output (VNLD5160)" },
+    { "bosch_pin": 99, "uaefi_pin": "B18", "uaefi_pin_en": "B18", "label": "OUT_LS2", "name": "Низкоуровневый выход 2 (VNLD5160)", "name_en": "Low-Side 2 output (VNLD5160)" },
+    { "bosch_pin": 100, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "USB_D+", "name": "USB, линия данных D+, клемма J26", "name_en": "USB data D+, terminal J26" },
+    { "bosch_pin": 101, "uaefi_pin": "C7", "uaefi_pin_en": "C7", "label": "IN_HALL3", "name": "Датчик Холла 3: распредвал, выпуск", "name_en": "CAM Sensor Exhaust" },
+    { "bosch_pin": 102, "uaefi_pin": "C15", "uaefi_pin_en": "C15", "label": "IN_AUX3_FUEL_PRESSURE_SENSOR", "name": "Доп. аналоговый вход 3: давление топлива", "name_en": "Auxiliary analog input 3. Fuel pressure sensor" },
+    { "bosch_pin": 103, "uaefi_pin": "D1", "uaefi_pin_en": "D1", "label": "IN_AUX1_EWG_POS_SENSOR", "name": "Доп. аналоговый вход 1: положение электронного вестгейта", "name_en": "Auxiliary analog input 1. Electronic wastegate position" },
+    { "bosch_pin": 104, "uaefi_pin": "D5", "uaefi_pin_en": "D5", "label": "IN_FLEX", "name": "Датчик состава топлива (Flex Fuel)", "name_en": "Digital Input / Flex fuel sensor" },
+    { "bosch_pin": 105, "uaefi_pin": "C3", "uaefi_pin_en": "C3", "label": "IN_AUX2_WBO_ANALOG", "name": "Доп. аналоговый вход 2: аналоговый сигнал ШДК", "name_en": "Auxiliary analog input 2. Wideband analog signal" },
+    { "bosch_pin": 106, "uaefi_pin": "C16", "uaefi_pin_en": "C16", "label": "VR_MAX9924+", "name": "Вход VR +, MAX9924, для венцов от 12 зубьев", "name_en": "VR_9924 positive input best for normal 12+ tooth wheels" },
+    { "bosch_pin": 107, "uaefi_pin": "C17", "uaefi_pin_en": "C17", "label": "VR_MAX9924-", "name": "Вход VR −, MAX9924, для венцов от 12 зубьев", "name_en": "VR_9924 negative input best for normal 12+ tooth wheels" },
+    { "bosch_pin": 108, "uaefi_pin": "—", "uaefi_pin_en": "—", "label": "USB_D-", "name": "USB, линия данных D−, клемма J27", "name_en": "USB data D-, terminal J27" },
+    { "bosch_pin": 109, "uaefi_pin": "E6", "uaefi_pin_en": "E6", "label": "2_WBO_Vm", "name": "ШДК: средняя точка Vs/Ip, Vm (вывод 2 датчика)", "name_en": "WBO Vs/Ip (Vm) (sensor pin 2)" },
+    { "bosch_pin": 110, "uaefi_pin": "E5", "uaefi_pin_en": "E5", "label": "1_WBO_Ip", "name": "ШДК: ток накачки Ip (вывод 1 датчика)", "name_en": "WBO Ip (sensor pin 1)" },
+    { "bosch_pin": 111, "uaefi_pin": "E2", "uaefi_pin_en": "E2", "label": "5_WBO_Rtrim", "name": "ШДК: калибровочный резистор CalR (вывод 5 датчика)", "name_en": "WBO CalR (sensor pin 5)" },
+    { "bosch_pin": 112, "uaefi_pin": "C10", "uaefi_pin_en": "C10", "label": "EGT+", "name": "Термопара EGT +, MAX31855", "name_en": "EGT positive input" },
+    { "bosch_pin": 113, "uaefi_pin": "C20", "uaefi_pin_en": "C20", "label": "EGT-", "name": "Термопара EGT −, MAX31855", "name_en": "EGT negative input" },
+    { "bosch_pin": 114, "uaefi_pin": "E3", "uaefi_pin_en": "E3", "label": "3_WBO_Heater", "name": "ШДК: минус нагревателя (вывод 3 датчика)", "name_en": "WBO Heater Negative (sensor pin 3)" },
+    { "bosch_pin": 115, "uaefi_pin": "E4", "uaefi_pin_en": "E4", "label": "6_WBO_Un", "name": "ШДК: опорное напряжение Vs/Un (вывод 6 датчика)", "name_en": "WBO Vs (Un) (sensor pin 6)" },
+    { "bosch_pin": 116, "uaefi_pin": "A2", "uaefi_pin_en": "A2", "label": "OUT_DC2-", "name": "Драйвер DC-мотора 2 (ETB), выход −, мост TLE9201SG до 6 А", "name_en": "DC2- output, TLE9201SG up to 6 A" },
+    { "bosch_pin": 119, "uaefi_pin": "B13", "uaefi_pin_en": "B13", "label": "OUT_IGN5", "name": "Выход зажигания, катушка 5 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 5 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 120, "uaefi_pin": "B10", "uaefi_pin_en": "B10", "label": "OUT_IGN6", "name": "Выход зажигания, катушка 6 (IGBT ISL9V3040D3ST)", "name_en": "Smart Ignition Coil 6 (IGBT ISL9V3040D3ST)" },
+    { "bosch_pin": 121, "uaefi_pin": "A6", "uaefi_pin_en": "A6", "label": "OUT_DC2+", "name": "Драйвер DC-мотора 2 (ETB), выход +, мост TLE9201SG до 6 А", "name_en": "DC2+ output, TLE9201SG up to 6 A" }
+  ],
+  "shared_pins": [
+    { "type": "GND", "uaefi_pin": "A3,A4,C8", "uaefi_pin_en": "A3,A4,C8", "name": "Силовая земля (также выведена на клемму J28)", "name_en": "Power/Chassis GND ground (also on terminal J28)", "pins": [3, 51, 53, 61, 80, 84, 118] },
+    { "type": "GNDA", "uaefi_pin": "C11,C12,C13,D11,D12", "uaefi_pin_en": "C11,C12,C13,D11,D12", "name": "Аналоговая земля", "name_en": "Analog GND / sensor ground", "pins": [17, 20, 35, 36, 73, 78, 82, 83, 85, 86, 87, 88, 89] },
+    { "type": "+5VP", "uaefi_pin": "C1,C2,D3,D4", "uaefi_pin_en": "C1,C2,D3,D4", "name": "Питание датчиков +5 В", "name_en": "+5v sensor supply", "pins": [32, 33, 90, 91, 93, 94, 95, 96, 97] },
+    { "type": "+12V", "uaefi_pin": "A8,E1", "uaefi_pin_en": "A8,E1", "name": "Питание +12 В", "name_en": "+12v from main relay", "pins": [44, 45, 63, 117] },
+    { "type": "OUT_DC1-", "uaefi_pin": "A1", "uaefi_pin_en": "A1", "name": "Драйвер DC-мотора 1 (ETB), выход −, мост TLE9201SG до 6 А", "name_en": "DC1- output (usually electronic throttle body), TLE9201SG up to 6 A", "pins": [64, 65] },
+    { "type": "OUT_DC1+", "uaefi_pin": "A5", "uaefi_pin_en": "A5", "name": "Драйвер DC-мотора 1 (ETB), выход +, мост TLE9201SG до 6 А", "name_en": "DC1+ output (usually electronic throttle body), TLE9201SG up to 6 A", "pins": [66, 67] }
+  ]
+};
+
+    // --- 0. ЛОКАЛИЗАЦИЯ ---
+    const I18N = {
+        ru: {
+            docTitle: "Интерактивная распиновка ЭБУ (121 Pin) - uaEFI",
+            title: "Интерактивная схема разъема ЭБУ (121 Pin)",
+            subtitle: "Карта соединений с платой uaEFI.",
+            search: "Поиск по пину, метке...",
+            thBosch: "Пин 121 (Bosch)",
+            thUaefi: "Пин uaEFI",
+            thLabel: "Метка со схемы",
+            thName: "Назначение (Имя)",
+            notConnected: "Не подключен",
+            dash: "—",
+            tipTitle: p => `Пин №${p} (Bosch 121)`,
+            tipUaefi: "uaEFI",
+            tipLabel: "Метка",
+            tipName: "Назначение"
+        },
+        en: {
+            docTitle: "Interactive ECU Pinout (121 Pin) - uaEFI",
+            title: "Interactive ECU Connector Pinout (121 Pin)",
+            subtitle: "Connection map to the uaEFI board.",
+            search: "Search by pin or label...",
+            thBosch: "Pin 121 (Bosch)",
+            thUaefi: "uaEFI pin",
+            thLabel: "Schematic label",
+            thName: "Function",
+            notConnected: "Not connected",
+            dash: "—",
+            tipTitle: p => `Pin #${p} (Bosch 121)`,
+            tipUaefi: "uaEFI",
+            tipLabel: "Label",
+            tipName: "Function"
+        }
+    };
+
+    const LANG_KEY = "uaefi_pinout_lang";
+
+    function detectLang() {
+        try {
+            const saved = localStorage.getItem(LANG_KEY);
+            if (saved === "ru" || saved === "en") return saved;
+        } catch (e) { /* приватный режим / доступ к хранилищу закрыт */ }
+        const nav = (navigator.languages && navigator.languages[0]) || navigator.language || "en";
+        return String(nav).toLowerCase().startsWith("ru") ? "ru" : "en";
+    }
+
+    let lang = detectLang();
+    const t = () => I18N[lang];
+
+    // --- 1. ПОДГОТОВКА ДАННЫХ ---
+    const pinDatabase = {};
+    const pinToGroup = {};
+
+    // Инициализация: пин не подключён
+    for (let i = 1; i <= 121; i++) {
+        pinDatabase[i] = { uaefi: null, label: "-", name: null, connected: false };
+    }
+
+    // Заполнение маппинга
+    pinData.pin_mapping.forEach(item => {
+        if(item.bosch_pin >= 1 && item.bosch_pin <= 121) {
+            pinDatabase[item.bosch_pin] = {
+                uaefi: { ru: item.uaefi_pin, en: item.uaefi_pin_en || item.uaefi_pin },
+                label: item.label,
+                name:  { ru: item.name || item.label, en: item.name_en || item.name || item.label },
+                connected: true
+            };
+        }
+    });
+
+    // Заполнение групп
+    pinData.shared_pins.forEach(group => {
+        group.pins.forEach(p => {
+            if(p >= 1 && p <= 121) {
+                pinToGroup[p] = group.type;
+                if(!pinDatabase[p].connected) {
+                    pinDatabase[p] = {
+                        uaefi: { ru: group.uaefi_pin, en: group.uaefi_pin_en || group.uaefi_pin },
+                        label: group.type,
+                        name:  { ru: group.name, en: group.name_en || group.name },
+                        connected: true
+                    };
+                }
+            }
+        });
+    });
+
+    // Значения пина в текущем языке
+    function pinView(p) {
+        const d = pinDatabase[p];
+        if (!d.connected) return { uaefi: t().dash, label: "-", name: t().notConnected };
+        return { uaefi: d.uaefi[lang], label: d.label, name: d.name[lang] };
+    }
+
+    // --- 2. РЕНДЕРИНГ (ГЕОМЕТРИЯ КАК В ОРИГИНАЛЕ) ---
+    const pinsGeometry = {};
+    // (Генерация геометрии оставлена без изменений)
+    const initGeom = () => {
+        pinsGeometry[4] = { cx: 50, cy: 60, type: "large", label: "top" };
+        pinsGeometry[5] = { cx: 110, cy: 60, type: "large", label: "top" };
+        pinsGeometry[3] = { cx: 80, cy: 135, type: "large", label: "right" };
+        pinsGeometry[1] = { cx: 50, cy: 210, type: "large", label: "bottom" };
+        pinsGeometry[2] = { cx: 110, cy: 210, type: "large", label: "bottom" };
+        let idx = 0; for(let p = 24; p >= 6; p--)  { pinsGeometry[p] = { cx: 160 + idx*20, cy: 60, type: "small", label: (p==24||p==6)?"top":"none" }; idx++; }
+        idx = 0;     for(let p = 43; p >= 25; p--) { pinsGeometry[p] = { cx: 160 + idx*20, cy: 100, type: "small", label: (p==43||p==25)?"top":"none" }; idx++; }
+        idx = 0;     for(let p = 62; p >= 44; p--) { pinsGeometry[p] = { cx: 160 + idx*20, cy: 170, type: "small", label: (p==62||p==44)?"bottom":"none" }; idx++; }
+        idx = 0;     for(let p = 81; p >= 63; p--) { pinsGeometry[p] = { cx: 160 + idx*20, cy: 210, type: "small", label: (p==81||p==63)?"bottom":"none" }; idx++; }
+        idx = 0;     for(let p = 106; p <= 113; p++) { pinsGeometry[p] = { cx: 585 + idx*20, cy: 60, type: "small", label: (p==106||p==113)?"top":"none" }; idx++; }
+        idx = 0;     for(let p = 98; p <= 105; p++)  { pinsGeometry[p] = { cx: 585 + idx*20, cy: 100, type: "small", label: (p==98||p==105)?"top":"none" }; idx++; }
+        idx = 0;     for(let p = 90; p <= 97; p++)   { pinsGeometry[p] = { cx: 585 + idx*20, cy: 170, type: "small", label: (p==90||p==97)?"bottom":"none" }; idx++; }
+        idx = 0;     for(let p = 82; p <= 89; p++)   { pinsGeometry[p] = { cx: 585 + idx*20, cy: 210, type: "small", label: (p==82||p==89)?"bottom":"none" }; idx++; }
+        pinsGeometry[119] = { cx: 775, cy: 60, type: "large", label: "top" };
+        pinsGeometry[120] = { cx: 815, cy: 60, type: "large", label: "none" };
+        pinsGeometry[121] = { cx: 855, cy: 60, type: "large", label: "top" };
+        pinsGeometry[117] = { cx: 795, cy: 135, type: "large", label: "none" };
+        pinsGeometry[118] = { cx: 835, cy: 135, type: "large", label: "none" };
+        pinsGeometry[114] = { cx: 775, cy: 210, type: "large", label: "bottom" };
+        pinsGeometry[115] = { cx: 815, cy: 210, type: "large", label: "none" };
+        pinsGeometry[116] = { cx: 855, cy: 210, type: "large", label: "bottom" };
+    };
+    initGeom();
+
+    const pinsContainer = document.getElementById('pinsContainer');
+    const tableBody = document.getElementById('tableBody');
+    const tooltip = document.getElementById('tooltip');
+    
+    // Рендер SVG
+    Object.keys(pinsGeometry).sort((a,b) => a-b).forEach(p => {
+        const geom = pinsGeometry[p];
+        const cls = `pin pin-${p}`;
+        let svg = geom.type === "large" 
+            ? `<rect id="pin-svg-${p}" class="${cls}" x="${geom.cx - 12}" y="${geom.cy - 8}" width="24" height="16" rx="2" data-pin="${p}" onclick="highlightPin(${p})"/>`
+            : `<circle id="pin-svg-${p}" class="${cls}" cx="${geom.cx}" cy="${geom.cy}" r="6" data-pin="${p}" onclick="highlightPin(${p})"/>`;
+        let lbl = '';
+        if (geom.label === "top") lbl = `<text class="pin-label" x="${geom.cx}" y="${geom.cy - 14}">${p}</text>`;
+        else if (geom.label === "bottom") lbl = `<text class="pin-label" x="${geom.cx}" y="${geom.cy + 22}">${p}</text>`;
+        else if (geom.label === "right") lbl = `<text class="pin-label" x="${geom.cx + 18}" y="${geom.cy + 5}">${p}</text>`;
+        pinsContainer.innerHTML += svg + lbl;
+    });
+
+    // Рендер таблицы
+    function renderTable() {
+        let rows = "";
+        for (let p = 1; p <= 121; p++) {
+            const d = pinView(p);
+            rows += `<tr id="pin-row-${p}" onclick="highlightPin(${p})"><td><strong>${p}</strong></td><td>${d.uaefi}</td><td><span class="badge">${d.label}</span></td><td>${d.name}</td></tr>`;
+        }
+        tableBody.innerHTML = rows;
+    }
+
+    // --- 3. ИНТЕРАКТИВ ---
+    const TIP_GAP = 15;     // отступ от курсора
+    const TIP_EDGE = 8;     // минимальный зазор до края окна
+
+    // Подсказка идёт справа от курсора, а если не помещается — слева от него.
+    // Ширину меряем у левого края: иначе остаток места до правого края окна
+    // сам ужимает блок переносами и ширина получается заниженной.
+    function placeTooltip(e) {
+        tooltip.style.left = '0px';
+        const w = tooltip.offsetWidth;
+        let x = e.clientX + TIP_GAP;
+        if (x + w > window.innerWidth - TIP_EDGE) {
+            x = e.clientX - TIP_GAP - w;
+        }
+        tooltip.style.left = Math.max(TIP_EDGE, x) + 'px';
+        tooltip.style.top = (e.clientY + TIP_GAP) + 'px';
+    }
+
+    document.querySelectorAll('.pin').forEach(el => {
+        const p = parseInt(el.getAttribute('data-pin'));
+        el.addEventListener('mouseenter', (e) => {
+            const data = pinView(p);
+            tooltip.innerHTML = `<div class="tooltip-title">${t().tipTitle(p)}</div>${t().tipUaefi}: ${data.uaefi}<br/>${t().tipLabel}: ${data.label}<br/>${t().tipName}: ${data.name}`;
+            tooltip.style.display = 'block';
+            placeTooltip(e);
+
+            // Логика групповой подсветки
+            const groupName = pinToGroup[p];
+            if (groupName) {
+                const group = pinData.shared_pins.find(g => g.type === groupName);
+                group.pins.forEach(targetP => {
+                    if (targetP <= 121) {
+                        document.getElementById('pin-svg-' + targetP)?.classList.add('connected-highlight');
+                        document.getElementById('pin-row-' + targetP)?.classList.add('connected-row');
+                    }
+                });
+            }
+        });
+        
+        el.addEventListener('mousemove', placeTooltip);
+
+        el.addEventListener('mouseleave', () => {
+            tooltip.style.display = 'none';
+            document.querySelectorAll('.pin').forEach(el => el.classList.remove('connected-highlight'));
+            document.querySelectorAll('tr').forEach(tr => tr.classList.remove('connected-row'));
+        });
+    });
+
+    function highlightPin(p) {
+        document.querySelectorAll('.pin').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected-row'));
+        document.getElementById('pin-svg-' + p)?.classList.add('active');
+        document.getElementById('pin-row-' + p)?.classList.add('selected-row');
+        document.getElementById('pin-row-' + p)?.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function filterTable() {
+        const val = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('#tableBody tr').forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(val) ? "" : "none");
+    }
+
+    // --- 4. ПЕРЕКЛЮЧЕНИЕ ЯЗЫКА ---
+    function applyLang() {
+        const s = t();
+        document.documentElement.lang = lang;
+        document.title = s.docTitle;
+        document.getElementById('pageTitle').textContent = s.title;
+        document.getElementById('pageSubtitle').textContent = s.subtitle;
+        document.getElementById('searchInput').placeholder = s.search;
+        document.getElementById('thBosch').textContent = s.thBosch;
+        document.getElementById('thUaefi').textContent = s.thUaefi;
+        document.getElementById('thLabel').textContent = s.thLabel;
+        document.getElementById('thName').textContent = s.thName;
+        document.getElementById('langBtn-ru').setAttribute('aria-pressed', String(lang === 'ru'));
+        document.getElementById('langBtn-en').setAttribute('aria-pressed', String(lang === 'en'));
+        renderTable();
+        filterTable();
+    }
+
+    function setLang(next) {
+        if (next !== 'ru' && next !== 'en') return;
+        lang = next;
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* хранилище недоступно */ }
+        applyLang();
+    }
+
+    applyLang();
+</script>
+
+</body>
+</html>
