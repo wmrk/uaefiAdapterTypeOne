@@ -213,7 +213,11 @@
       "track_widths": [
         0.0,
         0.3,
-        0.5
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5
       ],
       "tuning_pattern_settings": {
         "diff_pair_defaults": {
@@ -560,8 +564,8 @@
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 6.096,
         "tuning_profile": "",
-        "via_diameter": 1.2,
-        "via_drill": 0.6,
+        "via_diameter": 3.1,
+        "via_drill": 2.8,
         "wire_width": 6
       },
       {
@@ -596,8 +600,8 @@
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.0,
         "tuning_profile": "",
-        "via_diameter": 0.7,
-        "via_drill": 0.35,
+        "via_diameter": 0.8,
+        "via_drill": 0.5,
         "wire_width": 6
       },
       {
@@ -614,8 +618,8 @@
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 0.7,
         "tuning_profile": "",
-        "via_diameter": 0.6,
-        "via_drill": 0.3,
+        "via_diameter": 0.7,
+        "via_drill": 0.35,
         "wire_width": 6
       },
       {
@@ -632,8 +636,8 @@
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 1.778,
         "tuning_profile": "",
-        "via_diameter": 0.8,
-        "via_drill": 0.4,
+        "via_diameter": 1.1,
+        "via_drill": 0.8,
         "wire_width": 6
       },
       {
@@ -650,8 +654,8 @@
         "schematic_color": "rgba(0, 0, 0, 0.000)",
         "track_width": 2.5,
         "tuning_profile": "",
-        "via_diameter": 1.0,
-        "via_drill": 0.5,
+        "via_diameter": 1.5,
+        "via_drill": 1.2,
         "wire_width": 6
       }
     ],
@@ -762,16 +766,20 @@
         "pattern": "/OUT_DC2-"
       },
       {
-        "netclass": "2.5A",
+        "netclass": "6A",
         "pattern": "+12V"
       },
       {
-        "netclass": "2.5A",
+        "netclass": "1.5A",
         "pattern": "+5VUSB"
       },
       {
-        "netclass": "2.5A",
+        "netclass": "1.5A",
         "pattern": "/12V_KEY_VIGN"
+      },
+      {
+        "netclass": "2A",
+        "pattern": "/3_WBO_Heater"
       }
     ]
   },
