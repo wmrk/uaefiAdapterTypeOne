@@ -5479,7 +5479,7 @@
 		)
 		(model "kicad-embed://uaefi-b.step"
 			(offset
-				(xyz 0 0 0)
+				(xyz -96.5 -96.5 4)
 			)
 			(scale
 				(xyz 1 1 1)
